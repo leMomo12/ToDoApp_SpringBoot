@@ -1,12 +1,15 @@
 package com.mnowo.todoapp_springboot.presentation.to_do
 
+import android.util.Log.d
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnowo.todoapp_springboot.domain.models.ToDo
 import com.mnowo.todoapp_springboot.domain.repository.ToDoRepository
+import com.mnowo.todoapp_springboot.util.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,17 +20,22 @@ class ToDoViewModel @Inject constructor(
     private val repository: ToDoRepository
 ) : ViewModel() {
 
-    private val _toDoListData = mutableStateOf<List<ToDo>>(emptyList())
-    val toDoListData: State<List<ToDo>> = _toDoListData
-
-    private fun setToDoListData(value: List<ToDo>) {
-        _toDoListData.value = value
+    private val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+        throwable.printStackTrace()
     }
 
-    fun getAllToDoItems() = viewModelScope.launch(Dispatchers.IO) {
-        delay(10000)
-        val toDoList = repository.getAllToDoItems().toList()
+    private val _toDoListData = mutableStateOf<ListState<ToDo>>(ListState())
+    val toDoListData: State<ListState<ToDo>> = _toDoListData
 
-        setToDoListData(toDoList)
+    private fun setToDoListData(value: List<ToDo>) {
+        _toDoListData.value = toDoListData.value.copy(
+            list = value
+        )
+    }
+
+    fun getAllToDoItems() = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            val toDoList = repository.getAllToDoItems().toList()
+
+            setToDoListData(toDoList)
     }
 }

@@ -47,7 +47,7 @@ fun Header(onAddClick: () -> Unit) {
         ) {
             Text(text = "ToDo", fontWeight = FontWeight.Black)
             IconButton(onClick = { onAddClick() }) {
-                Icons.Default.Add
+                Icon(Icons.Default.Add, contentDescription = "")
             }
         }
     }
@@ -56,7 +56,7 @@ fun Header(onAddClick: () -> Unit) {
 @Composable
 fun ToDoList(viewModel: ToDoViewModel) {
     LazyColumn {
-        items(viewModel.toDoListData.value) { toDo ->
+        items(viewModel.toDoListData.value.list) { toDo ->
             ToDoListItem(title = toDo.title, description = toDo.description)
         }
     }
