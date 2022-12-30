@@ -1,6 +1,5 @@
 package com.mnowo.todoapp_springboot.presentation.to_do
 
-import android.util.Log.d
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,7 +10,6 @@ import com.mnowo.todoapp_springboot.util.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +18,7 @@ class ToDoViewModel @Inject constructor(
     private val repository: ToDoRepository
 ) : ViewModel() {
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
 
@@ -34,8 +32,13 @@ class ToDoViewModel @Inject constructor(
     }
 
     fun getAllToDoItems() = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            val toDoList = repository.getAllToDoItems().toList()
+        val toDoList = repository.getAllToDoItems().toList()
 
-            setToDoListData(toDoList)
+        setToDoListData(toDoList)
     }
+
+    fun deleteToDoItem(id: Long) = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+        repository.deleteToDoItemById(id = id)
+    }
+
 }
