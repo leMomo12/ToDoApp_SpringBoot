@@ -5,6 +5,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -13,7 +14,17 @@ import androidx.navigation.NavController
 import com.mnowo.todoapp_springboot.presentation.add_to_do.AddToDoViewModel
 
 @Composable
-fun AddToDoScreen(navController: NavController, viewModel: AddToDoViewModel = hiltViewModel()) {
+fun AddToDoScreen(
+    navController: NavController,
+    viewModel: AddToDoViewModel = hiltViewModel(),
+    toDoId: Long?
+) {
+
+    LaunchedEffect(key1 = true) {
+        toDoId?.let {
+            viewModel.editingSetup(it)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -22,9 +33,16 @@ fun AddToDoScreen(navController: NavController, viewModel: AddToDoViewModel = hi
             }
         }
     ) {
-        AddToDoBody(viewModel = viewModel) {
-            navController.navigate("toDoScreen")
-        }
+        AddToDoBody(
+            viewModel = viewModel,
+            navigateBack = { navController.navigate("toDoScreen") },
+            onEditClicked = {
+                toDoId?.let {
+                    viewModel.updateToDo(it)
+                }
+            }
+        )
+
     }
 }
 
@@ -43,7 +61,7 @@ fun AddToDoHeader(onBackClicked: () -> Unit) {
 }
 
 @Composable
-fun AddToDoBody(viewModel: AddToDoViewModel, navigateBack: () -> Unit) {
+fun AddToDoBody(viewModel: AddToDoViewModel, navigateBack: () -> Unit, onEditClicked: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.padding(vertical = 50.dp))
         OutlinedTextField(
@@ -67,10 +85,20 @@ fun AddToDoBody(viewModel: AddToDoViewModel, navigateBack: () -> Unit) {
         )
         Spacer(modifier = Modifier.padding(vertical = 30.dp))
         Button(onClick = {
-            viewModel.addNewToDo()
-            navigateBack()
+            if (!viewModel.editState.value) {
+                viewModel.addNewToDo()
+                navigateBack()
+            } else {
+                onEditClicked()
+            }
         }) {
-            Text(text = "Add ToDo")
+            Text(
+                text = if (viewModel.editState.value) {
+                    "Add ToDo"
+                } else {
+                    "Save ToDo"
+                }
+            )
         }
     }
 }

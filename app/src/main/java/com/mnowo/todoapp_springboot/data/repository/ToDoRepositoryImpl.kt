@@ -1,10 +1,11 @@
 package com.mnowo.todoapp_springboot.data.repository
 
-import android.util.Log.d
 import com.mnowo.todoapp_springboot.data.remote.ToDoApi
 import com.mnowo.todoapp_springboot.domain.models.ToDo
 import com.mnowo.todoapp_springboot.domain.repository.ToDoRepository
-import okhttp3.Response
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
 import javax.inject.Inject
 
 class ToDoRepositoryImpl @Inject constructor(private val toDoApi: ToDoApi) : ToDoRepository {
@@ -15,7 +16,7 @@ class ToDoRepositoryImpl @Inject constructor(private val toDoApi: ToDoApi) : ToD
 
     override suspend fun addNewToDo(toDo: ToDo) = toDoApi.addNewToDo(toDo = toDo)
 
-    override suspend fun deleteToDoItemById(id: Long) = toDoApi.deleteToDoItemById(id)
+    override suspend fun deleteToDoItemById(id: Long): Response<Unit> = toDoApi.deleteToDoItemById(id)
 
     override suspend fun updateToDo(toDo: ToDo) = toDoApi.updateToDo(toDo)
 }

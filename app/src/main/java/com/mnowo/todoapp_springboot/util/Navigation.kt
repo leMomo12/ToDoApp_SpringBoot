@@ -1,5 +1,6 @@
 package com.mnowo.todoapp_springboot
 
+import android.util.Log.d
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,7 +16,9 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable("addToDoScreen") {
-            AddToDoScreen(navController)
+            val toDoId = navController.previousBackStackEntry?.savedStateHandle?.get<Long>("toDoId")
+            d("ToDoId", "here id: $toDoId")
+            AddToDoScreen(navController, toDoId = toDoId)
         }
     }
 }

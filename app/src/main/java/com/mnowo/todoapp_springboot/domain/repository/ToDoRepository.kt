@@ -1,8 +1,9 @@
 package com.mnowo.todoapp_springboot.domain.repository
 
 import com.mnowo.todoapp_springboot.domain.models.ToDo
-import okhttp3.Response
-import retrofit2.http.Body
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
 
 interface ToDoRepository {
 
@@ -12,7 +13,7 @@ interface ToDoRepository {
 
     suspend fun addNewToDo(toDo: ToDo)
 
-    suspend fun deleteToDoItemById(id: Long)
+    suspend fun deleteToDoItemById(id: Long): Response<Unit>
 
-    suspend fun updateToDo(@Body toDo: ToDo)
+    suspend fun updateToDo(toDo: ToDo)
 }

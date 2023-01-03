@@ -1,15 +1,19 @@
 package com.mnowo.todoapp_springboot.presentation.to_do
 
+import android.util.Log.d
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mnowo.todoapp_springboot.di.AppModule_ProvideToDoApiFactory
 import com.mnowo.todoapp_springboot.domain.models.ToDo
 import com.mnowo.todoapp_springboot.domain.repository.ToDoRepository
 import com.mnowo.todoapp_springboot.util.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,11 +38,14 @@ class ToDoViewModel @Inject constructor(
     fun getAllToDoItems() = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
         val toDoList = repository.getAllToDoItems().toList()
 
+        d("GetItems", "Executed: ${toDoList.size}")
+
         setToDoListData(toDoList)
     }
 
     fun deleteToDoItem(id: Long) = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
         repository.deleteToDoItemById(id = id)
+        getAllToDoItems()
     }
 
 }
